@@ -1,0 +1,5 @@
+name: BoltChestShop
+version: '${version}'
+main: org.popcraft.boltchestshop.BoltChestShop
+api-version: 1.19
+depend: [ Bolt, ChestShop ]
