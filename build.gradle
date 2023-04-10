@@ -27,8 +27,8 @@ repositories {
 
 dependencies {
     compileOnly "org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT"
-    compileOnly "org.popcraft:bolt-common:1.0.432"
-    compileOnly "org.popcraft:bolt-bukkit:1.0.432"
+    compileOnly "org.popcraft:bolt-common:1.0.433"
+    compileOnly "org.popcraft:bolt-bukkit:1.0.433"
     compileOnly "com.acrobot.chestshop:chestshop:3.12"
 }
 

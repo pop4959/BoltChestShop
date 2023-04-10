@@ -17,7 +17,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.popcraft.bolt.BoltAPI;
 import org.popcraft.bolt.protection.BlockProtection;
 import org.popcraft.bolt.protection.Protection;
-import org.popcraft.bolt.util.BukkitAdapter;
 
 import java.util.UUID;
 
@@ -83,7 +82,7 @@ public final class BoltChestShop extends JavaPlugin implements Listener {
             case DONATION -> "deposit";
             case DISPLAY -> "display";
         };
-        final BlockProtection protection = BukkitAdapter.createBlockProtection(block, owner, type);
+        final BlockProtection protection = bolt.createBlockProtection(block, owner, type);
         bolt.saveProtection(protection);
         event.setProtected(true);
     }
