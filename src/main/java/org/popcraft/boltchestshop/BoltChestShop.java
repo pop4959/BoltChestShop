@@ -14,7 +14,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.popcraft.bolt.BoltPlugin;
+import org.popcraft.bolt.BoltAPI;
 import org.popcraft.bolt.protection.BlockProtection;
 import org.popcraft.bolt.protection.Protection;
 import org.popcraft.bolt.util.BukkitAdapter;
@@ -22,11 +22,15 @@ import org.popcraft.bolt.util.BukkitAdapter;
 import java.util.UUID;
 
 public final class BoltChestShop extends JavaPlugin implements Listener {
-    private BoltPlugin bolt;
+    private BoltAPI bolt;
 
     @Override
     public void onEnable() {
-        this.bolt = (BoltPlugin) getServer().getPluginManager().getPlugin("Bolt");
+        this.bolt = getServer().getServicesManager().load(BoltAPI.class);
+        if (bolt == null) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -46,7 +50,7 @@ public final class BoltChestShop extends JavaPlugin implements Listener {
         if (player == null || block == null) {
             return;
         }
-        final Protection protection = bolt.findProtection(block).orElse(null);
+        final Protection protection = bolt.findProtection(block);
         if (protection == null) {
             return;
         }
@@ -67,7 +71,7 @@ public final class BoltChestShop extends JavaPlugin implements Listener {
         if (player == null || block == null) {
             return;
         }
-        final Protection existingProtection = bolt.findProtection(block).orElse(null);
+        final Protection existingProtection = bolt.findProtection(block);
         if (existingProtection != null) {
             event.setProtected(true);
             return;
@@ -80,23 +84,23 @@ public final class BoltChestShop extends JavaPlugin implements Listener {
             case DISPLAY -> "display";
         };
         final BlockProtection protection = BukkitAdapter.createBlockProtection(block, owner, type);
-        bolt.getBolt().getStore().saveBlockProtection(protection);
+        bolt.saveProtection(protection);
         event.setProtected(true);
     }
 
     @EventHandler
     public void onShopDestroyed(final ShopDestroyedEvent event) {
-        bolt.findProtection(event.getSign().getBlock())
-                .filter(BlockProtection.class::isInstance)
-                .map(BlockProtection.class::cast)
-                .ifPresent(protection -> bolt.getBolt().getStore().removeBlockProtection(protection));
+        final BlockProtection signProtection = bolt.loadProtection(event.getSign().getBlock());
+        if (signProtection != null) {
+            bolt.removeProtection(signProtection);
+        }
         final Container container = event.getContainer();
         if (container == null || !Properties.REMOVE_LWC_PROTECTION_AUTOMATICALLY) {
             return;
         }
-        bolt.findProtection(container.getBlock())
-                .filter(BlockProtection.class::isInstance)
-                .map(BlockProtection.class::cast)
-                .ifPresent(protection -> bolt.getBolt().getStore().removeBlockProtection(protection));
+        final BlockProtection containerProtection = bolt.loadProtection(container.getBlock());
+        if (containerProtection != null) {
+            bolt.removeProtection(containerProtection);
+        }
     }
 }
