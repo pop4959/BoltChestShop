@@ -53,7 +53,7 @@ public final class BoltChestShop extends JavaPlugin implements Listener {
         if (protection == null) {
             return;
         }
-        if (bolt.canAccess(protection, player, "chestshop")) {
+        if (protection.getOwner().equals(player.getUniqueId()) || bolt.canAccess(protection, player, "chestshop")) {
             event.setResult(Event.Result.ALLOW);
         } else {
             event.setResult(Event.Result.DENY);
