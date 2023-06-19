@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'com.modrinth.minotaur' version "2.+"
 }
 
 group = 'org.popcraft'
-version = '1.0-SNAPSHOT'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -54,5 +55,19 @@ processResources {
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
+    }
+}
+
+modrinth {
+    token.set(System.getenv("MODRINTH_TOKEN"))
+    projectId.set("boltchestshop")
+    versionName.set("${project.name} ${version}")
+    versionNumber.set("${version}")
+    versionType.set("release")
+    uploadFile.set(tasks.jar)
+    gameVersions.addAll("1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1")
+    loaders.addAll("bukkit", "spigot", "paper")
+    dependencies {
+        required.project "bolt"
     }
 }
